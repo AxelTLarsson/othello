@@ -146,12 +146,12 @@ class Game:
 if __name__ == '__main__':
     board = Board()
 
-    # place = '2a'
-    # board[place] = 1
+    place = '2a'
+    board[place] = 1
 
-    # players = [Player('black'), Player('white')]
-    # game = Game(board, players)
-    # game.play()
+    players = [Player('black'), Player('white')]
+    game = Game(board, players)
+    game.play()
 
     print(board.on_board('a5'))
     print(board.on_board('k5'))
