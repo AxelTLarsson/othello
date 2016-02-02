@@ -1,4 +1,5 @@
 import numpy as np
+import re
 
 
 class Player:
@@ -39,8 +40,11 @@ class Board:
         return s
 
     def on_board(self, position):
-        x, y = self.parse_index(position)
-        for p in (x, y):
+        if position == None:
+            # self.parse_index will return None for an invalid input
+            return False
+
+        for p in position:
             if p < 0 or p > 7:
                 return False
         else:
@@ -50,69 +54,101 @@ class Board:
         return self._board.__getattribute__(*args, **kwargs)
 
     def parse_index(self, item):
-        if item[0].isalpha():
-            item = item[::-1]
+        if re.match(r'\d[a-zA-Z]', item):
+            pass  # number first, followed by letter
+        elif re.match(r'[a-zA-Z]\d', item):
+            item = item[::-1]  # letter first, followed by number (reverse it)
+        else:
+            return None  # not a valid combination of letter and number
 
         s1 = int(item[0]) - 1
         try:
             s2 = Board.order.index(item[1])
         except ValueError:
-            s2 = -1
+            return None
         return s1, s2
 
     def parse_numeric_index(self, x, y):
         return Board.order[x] + str(y + 1)
 
     def __getitem__(self, item):
-        return self._board[self.parse_index(item)]
+        if isinstance(item, str):
+            return self._board[self.parse_index(item)]
+        else:
+            return self._board[item]
 
     def __setitem__(self, key, value):
-        self._board[self.parse_index(key)] = value
+        if isinstance(key, str):
+            self._board[self.parse_index(key)] = value
+        else:
+            self._board[key] = value
 
 
 class Game:
-    def __init__(self, board, players):
+    def __init__(self, board:Board, players):
         self.players = players
         self.board = board
-        self.board['4d'] = int(players[0])
-        self.board['4e'] = int(players[1])
-        self.board['5d'] = int(players[1])
-        self.board['5e'] = int(players[0])
+
+        # set the starting positions of the players
+        self.board['4d'] = int(players[1])
+        self.board['4e'] = int(players[0])
+        self.board['5d'] = int(players[0])
+        self.board['5e'] = int(players[1])
 
     def move(self, color, place):
         assert color in (1, 2)
         assert 0 <= place[0] <= self.board.shape[0]
         assert 0 <= place[1] <= self.board.shape[1]
-        assert self.is_legal_move(color, place)
+        assert self.get_valid_flips(color, place)
 
         self.board[place] = color
         # fill in all relevant squares
 
-    def is_legal_move(self, current_player, other_player, place):
+    def get_valid_flips(self, current_player, other_player, place):
+
+        if place == None:
+            return None  # place will be None if
 
         # check that the tile is not taken
         if self.board[place] != 0:
-            return False
+            return None
 
         # check that the position is within the board
         if not self.board.on_board(place):
-            return False
+            return None
 
+        tiles_to_flip = list()
         for xdir, ydir in ([0, 1], [1, 1], [1, 0], [1, -1], [0, -1],
                            [-1, -1], [-1, 0], [-1, 1]):
-            x, y = self.board.parse_index(place)  # x-y position
+            x, y = place  # x-y position
             x += xdir
             y += ydir
-            pos = self.board.parse_numeric_index(x, y)
-            if not self.board.on_board(pos):
+            if not self.board.on_board((x, y)):
                 continue
 
-            while self.board[pos] == int(other_player):
+            while self.board[x, y] == int(other_player):
                 x += xdir
                 y += ydir
-                pos = self.board.parse_numeric_index(x, y)
-                if not self.board.on_board(pos):
+                if not self.board.on_board((x, y)):
                     break
+
+            if not self.board.on_board((x, y)):
+                continue
+
+            if self.board[x, y] == int(current_player):
+                # build a list of all the tiles to flip
+                while True:
+                    x -= xdir
+                    y -= ydir
+                    if (x, y) == place:
+                        break
+                    tiles_to_flip.append((x, y))
+
+        return tiles_to_flip if tiles_to_flip else None
+
+    def flip_tiles(self, tiles, player):
+        for tile in tiles:
+            self.board[tile] = int(player)
 
     def legal_moves(self, color):
         # return a list of all legal moves on the board
@@ -126,13 +162,18 @@ class Game:
         while not finished:
             print(self.board)
             player = self.players[i % 2]
+            other_player = self.players[(i+1) % 2]
             prompt = 'Player %s: ' % player
             position = input(prompt)
             if position.upper() == 'Q':
                 break
 
-            if self.is_legal_move(player, position):
+            position = self.board.parse_index(position)
+
+            tiles = self.get_valid_flips(player, other_player, position)
+            if tiles:
                 self.board[position] = int(player)
+                self.flip_tiles(tiles, player)
             else:
                 print("Illegal move!")
                 i -= 1
@@ -146,14 +187,9 @@ class Game:
 if __name__ == '__main__':
     board = Board()
 
-    place = '2a'
-    board[place] = 1
-
     players = [Player('black'), Player('white')]
-    game = Game(board, players)
-    game.play()
 
-    print(board.on_board('a5'))
-    print(board.on_board('k5'))
-    print(board.on_board('9a'))
+    game = Game(board, players)
+    # board['5e'] = int(players[0])
+    game.play()
 
