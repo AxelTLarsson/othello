@@ -107,6 +107,5 @@ setup(
         ],
     },
 
-    test_suite='tests',
-    tests_require=['nose'],
+    test_suite='tests', # name of test folder
 )
