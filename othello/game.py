@@ -40,7 +40,10 @@ class Board:
         return s
 
     def on_board(self, position):
-        if position == None:
+        """
+        Returns true if position is on the board.
+        """
+        if position is None:
             # self.parse_index will return None for an invalid input
             return False
 
@@ -54,6 +57,10 @@ class Board:
         return self._board.__getattribute__(*args, **kwargs)
 
     def parse_index(self, item):
+        """
+        Convert alphanumeric index into numeric form.
+        E.g. parse_index('1a') == (0, 0)
+        """
         if re.match(r'\d[a-zA-Z]', item):
             pass  # number first, followed by letter
         elif re.match(r'[a-zA-Z]\d', item):
@@ -69,6 +76,10 @@ class Board:
         return s1, s2
 
     def parse_numeric_index(self, x, y):
+        """
+        Convert numeric index into human-readable alphanumeric form.
+        E.g. parse_numeric_index(0, 0) == '1a'
+        """
         return Board.order[x] + str(y + 1)
 
     def __getitem__(self, item):
@@ -85,7 +96,7 @@ class Board:
 
 
 class Game:
-    def __init__(self, board:Board, players):
+    def __init__(self, board, players):
         self.players = players
         self.board = board
 
@@ -106,7 +117,7 @@ class Game:
 
     def get_valid_flips(self, current_player, other_player, place):
 
-        if place == None:
+        if place is None:
             return None  # place will be None if
 
         # check that the tile is not taken
@@ -162,7 +173,7 @@ class Game:
         while not finished:
             print(self.board)
             player = self.players[i % 2]
-            other_player = self.players[(i+1) % 2]
+            other_player = self.players[(i + 1) % 2]
             prompt = 'Player %s: ' % player
             position = input(prompt)
             if position.upper() == 'Q':
@@ -192,4 +203,3 @@ if __name__ == '__main__':
     game = Game(board, players)
     # board['5e'] = int(players[0])
     game.play()
-
