@@ -1,7 +1,12 @@
+from othello.game import *
 
-def main():
+
+def play():
     """Entry point for the application script"""
-    print("Call your main application code here")
+    board = Board()
+    players = [Player('black'), Player('white')]
+    game = Game(board, players)
+    game.play()
 
-def test():
-	print("test")
+if __name__ == '__main__':
+    play()

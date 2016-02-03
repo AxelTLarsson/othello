@@ -161,7 +161,7 @@ class Game:
         for tile in tiles:
             self.board[tile] = int(player)
 
-    def legal_moves(self, color):
+    def legal_moves(self, player):
         # return a list of all legal moves on the board
         pass
 
@@ -174,6 +174,17 @@ class Game:
             print(self.board)
             player = self.players[i % 2]
             other_player = self.players[(i + 1) % 2]
+
+            # Check that moves are actually available for current player
+            if self.legal_moves(player) == []:
+                if self.legal_moves(other_player) == []:
+                    # Game over
+                    break
+                else:
+                    print('No legal moves available for player: %s!' % player)
+                    i += 1  # other player's turn instead
+                    continue
+
             prompt = 'Player %s: ' % player
             position = input(prompt)
             if position.upper() == 'Q':
@@ -192,6 +203,7 @@ class Game:
             i += 1
         else:
             # game finished
+            print('Game over')
             pass
 
 
