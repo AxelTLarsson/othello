@@ -41,7 +41,7 @@ class Board:
 
     def on_board(self, position):
         """
-        Returns true if position is on the board.
+        Return true if position is on the board.
         """
         if position is None:
             # self.parse_index will return None for an invalid input
@@ -106,6 +106,7 @@ class Game:
         self.board['5d'] = int(players[0])
         self.board['5e'] = int(players[1])
 
+    # not used? should be removed?
     def move(self, color, place):
         assert color in (1, 2)
         assert 0 <= place[0] <= self.board.shape[0]
@@ -116,9 +117,12 @@ class Game:
         # fill in all relevant squares
 
     def get_valid_flips(self, current_player, other_player, place):
-
+        """
+        For a suggested move, given by 'place', return the tiles to be flipped,
+        if any, otherwise return None.
+        """
         if place is None:
-            return None  # place will be None if
+            return None
 
         # check that the tile is not taken
         if self.board[place] != 0:
@@ -129,23 +133,31 @@ class Game:
             return None
 
         tiles_to_flip = list()
+        # go through possible directions, i.e. [0,1] is tile above,
         for xdir, ydir in ([0, 1], [1, 1], [1, 0], [1, -1], [0, -1],
                            [-1, -1], [-1, 0], [-1, 1]):
             x, y = place  # x-y position
             x += xdir
             y += ydir
+
+            # check next direction if current one is not within board
             if not self.board.on_board((x, y)):
                 continue
 
+            # go as far as possible in current direction
+            # while tiles are of opposing colour
             while self.board[x, y] == int(other_player):
                 x += xdir
                 y += ydir
                 if not self.board.on_board((x, y)):
                     break
 
+            # again, test another direction if not on board
+            # (opposing player's tiles are stretched all the way to an edge)
             if not self.board.on_board((x, y)):
                 continue
 
+            # if current stretch is "anchored" by this player's tile, we're ok
             if self.board[x, y] == int(current_player):
                 # build a list of all the tiles to flip
                 while True:
@@ -158,14 +170,22 @@ class Game:
         return tiles_to_flip if tiles_to_flip else None
 
     def flip_tiles(self, tiles, player):
+        """
+        Flip all tiles in 'tiles' to the colour of 'player'.
+        """
         for tile in tiles:
             self.board[tile] = int(player)
 
     def legal_moves(self, player):
-        # return a list of all legal moves on the board
+        """
+        Return a list of all possible legal moves on the board for 'player'.
+        """
         pass
 
     def play(self):
+        """
+        Start the game, alternating between players' turns.
+        """
         finished = False
 
         i = 0
@@ -213,5 +233,4 @@ if __name__ == '__main__':
     players = [Player('black'), Player('white')]
 
     game = Game(board, players)
-    # board['5e'] = int(players[0])
     game.play()
