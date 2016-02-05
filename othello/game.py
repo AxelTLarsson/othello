@@ -3,6 +3,9 @@ import re
 
 
 class Player:
+    """
+    Represents the players in the game; white and black.
+    """
     white = 1
     black = 2
 
@@ -10,9 +13,15 @@ class Player:
         self.color = color
 
     def __str__(self):
+        """
+        Pretty print the player names, e.g. 'white' or 'black'.
+        """
         return self.color
 
     def __int__(self):
+        """
+        Get the numeric representation of the player, as used on the board.
+        """
         if self.color == 'white':
             return Player.white
         elif self.color == 'black':
@@ -22,6 +31,11 @@ class Player:
 
 
 class Board:
+    """
+    Represents the board as an 8 x 8 matrix, where 0:s are unoccupied tiles,
+    and players' tiles are given by their numeric representation from int()
+    in the Player class.
+    """
 
     order = 'abcdefgh'
 
@@ -96,6 +110,10 @@ class Board:
 
 
 class Game:
+    """
+    Handles the actual game play, defining allowable moves, starting positions.
+    """
+
     def __init__(self, board, players):
         self.players = players
         self.board = board
@@ -105,16 +123,6 @@ class Game:
         self.board['4e'] = int(players[0])
         self.board['5d'] = int(players[0])
         self.board['5e'] = int(players[1])
-
-    # not used? should be removed?
-    def move(self, color, place):
-        assert color in (1, 2)
-        assert 0 <= place[0] <= self.board.shape[0]
-        assert 0 <= place[1] <= self.board.shape[1]
-        assert self.get_valid_flips(color, place)
-
-        self.board[place] = color
-        # fill in all relevant squares
 
     def get_valid_flips(self, current_player, other_player, place):
         """
