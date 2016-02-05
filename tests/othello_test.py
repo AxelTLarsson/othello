@@ -5,25 +5,22 @@ from othello.game import *
 
 class OthelloTest(TestCase):
 
-    def test_on_board_true(self):
+    def test_on_board(self):
         board = Board()
-        self.assertTrue(board.on_board(board.parse_index('a5')))
-        self.assertTrue(board.on_board(board.parse_index('g8')))
-        self.assertTrue(board.on_board(board.parse_index('h8')))
-        self.assertFalse(board.on_board(board.parse_index('i5')))
-    
-    def test_on_board_with_false(self):
-        board = Board()
-        # might be that this should actually return false?
-        for test in ('xy', '-1g', '98', 'gg', 'qu', '11a', 'a11'):
-            print(board.parse_index(test))
+
+        # valid indices
+        for test in ('a5', 'g8', 'h8', 'a1', '7c'):
+            self.assertTrue(board.on_board(board.parse_index(test)))
+
+        # invalid indices
+        for test in ('xy', '-1g', '98', 'gg', 'qu', '11a', 'a11', 'i5'):
             self.assertFalse(board.on_board(board.parse_index(test)))
 
-    def test_is_legal_move(self):
+    def test_get_valid_flips(self):
         board = Board()
         players = [Player('black'), Player('white')]
         game = Game(board, players)
-        
+
         player = game.players[0]
         other_player = game.players[1]
 
@@ -34,7 +31,6 @@ class OthelloTest(TestCase):
                                                board.parse_index('4d')))
 
         # all possible legal moves for starting black
-        # NOTE: double check player indices
         self.assertEqual(game.get_valid_flips(player, other_player,
                                               board.parse_index('3d')),
                          [board.parse_index('4d')])
@@ -47,3 +43,32 @@ class OthelloTest(TestCase):
         self.assertEqual(game.get_valid_flips(player, other_player,
                                               board.parse_index('5f')),
                          [board.parse_index('5e')])
+
+    def test_legal_moves(self):
+        board = Board()
+        white = Player('white')
+        black = Player('black')
+        game = Game(board, [black, white])
+
+        # test possible starting moves for black
+        legal_moves = map(
+            board.parse_numeric_index,
+            game.legal_moves(black, white))
+        self.assertEqual(['c4', 'd3', 'e6', 'f5'], list(legal_moves))
+
+        # if white were to play first
+        legal_moves = map(
+            board.parse_numeric_index,
+            game.legal_moves(white, black))
+        self.assertEqual(
+            sorted(['e3', 'f4', 'c5', 'd6']), sorted(list(legal_moves)))
+
+        # assume black makes 'd3'
+        game.flip_tiles(
+            game.get_valid_flips(black, white, board.parse_index('d3')), black)
+        # then check legal moves for white
+        legal_moves = map(
+            board.parse_numeric_index,
+            game.legal_moves(white, black))
+        self.assertEqual(
+            sorted(['c3', 'e3', 'c5']), sorted(list(legal_moves)))
