@@ -89,11 +89,12 @@ class Board:
             return None
         return s1, s2
 
-    def parse_numeric_index(self, x, y):
+    def parse_numeric_index(self, item):
         """
         Convert numeric index into human-readable alphanumeric form.
         E.g. parse_numeric_index(0, 0) == '1a'
         """
+        x, y = item
         return Board.order[x] + str(y + 1)
 
     def __getitem__(self, item):
@@ -184,11 +185,16 @@ class Game:
         for tile in tiles:
             self.board[tile] = int(player)
 
-    def legal_moves(self, player):
+    def legal_moves(self, player, other_player):
         """
         Return a list of all possible legal moves on the board for 'player'.
         """
-        pass
+        legal_moves = list()
+        for x in range(0, 7):
+            for y in range(0, 7):
+                if self.get_valid_flips(player, other_player, (x, y)):
+                    legal_moves.append((x, y))
+        return legal_moves
 
     def play(self):
         """

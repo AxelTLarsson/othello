@@ -43,3 +43,32 @@ class OthelloTest(TestCase):
         self.assertEqual(game.get_valid_flips(player, other_player,
                                               board.parse_index('5f')),
                          [board.parse_index('5e')])
+
+    def test_legal_moves(self):
+        board = Board()
+        white = Player('white')
+        black = Player('black')
+        game = Game(board, [black, white])
+
+        # test possible starting moves for black
+        legal_moves = map(
+            board.parse_numeric_index,
+            game.legal_moves(black, white))
+        self.assertEqual(['c4', 'd3', 'e6', 'f5'], list(legal_moves))
+
+        # if white were to play first
+        legal_moves = map(
+            board.parse_numeric_index,
+            game.legal_moves(white, black))
+        self.assertEqual(
+            sorted(['e3', 'f4', 'c5', 'd6']), sorted(list(legal_moves)))
+
+        # assume black makes 'd3'
+        game.flip_tiles(
+            game.get_valid_flips(black, white, board.parse_index('d3')), black)
+        # then check legal moves for white
+        legal_moves = map(
+            board.parse_numeric_index,
+            game.legal_moves(white, black))
+        self.assertEqual(
+            sorted(['c3', 'e3', 'c5']), sorted(list(legal_moves)))
