@@ -64,11 +64,28 @@ class OthelloTest(TestCase):
             sorted(['e3', 'f4', 'c5', 'd6']), sorted(list(legal_moves)))
 
         # assume black makes 'd3'
-        game.flip_tiles(
-            game.get_valid_flips(black, white, board.parse_index('d3')), black)
+        flips = game.get_valid_flips(black, white, board.parse_index('d3'))
+        board[board.parse_index('d3')] = int(black)
+        game.flip_tiles(flips, black)
+
         # then check legal moves for white
         legal_moves = map(
             board.parse_numeric_index,
             game.legal_moves(white, black))
         self.assertEqual(
             sorted(['c3', 'e3', 'c5']), sorted(list(legal_moves)))
+
+    def test_nbr_tiles(self):
+        board = Board()
+        white = Player('white')
+        black = Player('black')
+        game = Game(board, [black, white])
+        self.assertEqual(game.nbr_of_tiles(black), 2)
+        self.assertEqual(game.nbr_of_tiles(white), 2)
+        # black makes move 'd3'
+        flips = game.get_valid_flips(black, white, board.parse_index('d3'))
+        board[board.parse_index('d3')] = int(black)
+        game.flip_tiles(flips, black)
+
+        self.assertEqual(game.nbr_of_tiles(white), 1)
+        self.assertEqual(game.nbr_of_tiles(black), 4)

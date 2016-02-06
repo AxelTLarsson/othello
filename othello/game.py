@@ -1,5 +1,7 @@
 import numpy as np
 import re
+import argparse
+import os
 
 
 class Player:
@@ -115,9 +117,10 @@ class Game:
     Handles the actual game play, defining allowable moves, starting positions.
     """
 
-    def __init__(self, board, players):
+    def __init__(self, board, players, visualise=False):
         self.players = players
         self.board = board
+        self.visualise = visualise
 
         # set the starting positions of the players
         self.board['4d'] = int(players[1])
@@ -196,55 +199,109 @@ class Game:
                     legal_moves.append((x, y))
         return legal_moves
 
+    def clear(self):
+        """
+        Clear terminal window.
+        """
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+    def print_help(self):
+        """
+        Print friendly help text of how to play.
+        """
+        print('Make a move by specifying coordinates, such as "a1" or "1a".')
+        print('Show this help text by typing "h" or "help".')
+        print('Exit the game at any time by typing "q" or "quit".')
+
     def play(self):
         """
         Start the game, alternating between players' turns.
         """
         finished = False
-
         i = 0
 
         while not finished:
-            print(self.board)
+            if self.visualise:
+                self.clear()
+                print(self.board)
+            else:
+                # todo: print output move from AI
+                pass
+
             player = self.players[i % 2]
             other_player = self.players[(i + 1) % 2]
 
             # Check that moves are actually available for current player
-            if self.legal_moves(player) == []:
-                if self.legal_moves(other_player) == []:
+            if self.legal_moves(player, other_player) == []:
+                if self.legal_moves(other_player, player) == []:
                     # Game over
+                    print('No legal moves available for any player!')
                     break
                 else:
                     print('No legal moves available for player: %s!' % player)
                     i += 1  # other player's turn instead
                     continue
 
-            prompt = 'Player %s: ' % player
-            position = input(prompt)
-            if position.upper() == 'Q':
-                break
+            # loop until we get some valid input
+            while True:
+                prompt = 'Player %s: ' % player
+                position = input(prompt)
+                if position.upper() == 'Q' or position.upper() == 'QUIT':
+                    return
+                elif position.upper() == 'H' or position.upper() == 'HELP':
+                    self.print_help()
+                    continue
 
-            position = self.board.parse_index(position)
+                position = self.board.parse_index(position)
 
-            tiles = self.get_valid_flips(player, other_player, position)
-            if tiles:
-                self.board[position] = int(player)
-                self.flip_tiles(tiles, player)
-            else:
-                print("Illegal move!")
-                i -= 1
+                tiles = self.get_valid_flips(player, other_player, position)
+                if tiles:
+                    self.board[position] = int(player)
+                    self.flip_tiles(tiles, player)
+                    break
+                else:
+                    print('Illegal move!')
+                    # we do not update i here, since 'player' is not updated
+                    # in this loop anyway
 
             i += 1
+
+        # game finished
+        player_tiles = self.nbr_of_tiles(player)
+        other_tiles = self.nbr_of_tiles(other_player)
+        if player_tiles > other_tiles:
+            print("Player {} won with {} tiles over player {}'s {} tiles!"
+                  .format(player, player_tiles, other_player, other_tiles))
+        elif other_tiles > player_tiles:
+            print("Player {} won with {} tiles over player {}'s {} tiles!"
+                  .format(other_player, other_tiles, player, player_tiles))
         else:
-            # game finished
-            print('Game over')
-            pass
+            print("It's a draw!'")
+
+    def nbr_of_tiles(self, player):
+        """
+        Get the number of tiles on the board belonging to 'player'.
+        """
+        nbr = 0
+        for x in np.nditer(self.board):
+            if x == int(player):
+                nbr += 1
+        return nbr
 
 
-if __name__ == '__main__':
+def main():
+    parser = argparse.ArgumentParser(description='Play othello vs an AI.')
+    parser.add_argument(
+        '-v', '--visualise',
+        help='visualise game board, default is to output only AI moves',
+        action='store_true')
+    args = parser.parse_args()
+
     board = Board()
-
     players = [Player('black'), Player('white')]
 
-    game = Game(board, players)
+    game = Game(board, players, args.visualise)
     game.play()
+
+if __name__ == '__main__':
+    main()
