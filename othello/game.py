@@ -238,9 +238,11 @@ class Game:
                     print('No legal moves available for any player!')
                     break
                 else:
-                    print('No legal moves available for player: %s!' % player)
-                    i += 1  # other player's turn instead
-                    continue
+                    print('No legal moves available for player %s!' % player)
+                    # other player's turn instead
+                    i += 1
+                    player = self.players[i % 2]
+                    other_player = self.players[(i + 1) % 2]
 
             # loop until we get some valid input
             while True:

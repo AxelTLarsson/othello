@@ -75,6 +75,66 @@ class OthelloTest(TestCase):
         self.assertEqual(
             sorted(['c3', 'e3', 'c5']), sorted(list(legal_moves)))
 
+    def test_legal_moves_thoroughly(self):
+        board = Board()
+        white = Player('white')
+        black = Player('black')
+        game = Game(board, [black, white])
+        # a specific instance that casued issues:
+        """
+            a   b   c   d   e   f   g   h
+          +---+---+---+---+---+---+---+---+
+        1 |   |   |   |   |   |   |   |   |
+          +---+---+---+---+---+---+---+---+
+        2 |   |   |   |   |   |   |   |   |
+          +---+---+---+---+---+---+---+---+
+        3 |   |   |   | * | * | * |   |   |
+          +---+---+---+---+---+---+---+---+
+        4 |   |   |   | * | * | * | O |   |
+          +---+---+---+---+---+---+---+---+
+        5 |   |   |   | * | * | * | O | * |
+          +---+---+---+---+---+---+---+---+
+        6 |   |   |   | * | * | * | O | * |
+          +---+---+---+---+---+---+---+---+
+        7 |   |   | * |   | * | * | O |   |
+          +---+---+---+---+---+---+---+---+
+        8 |   |   |   |   |   | O | O | O |
+          +---+---+---+---+---+---+---+---+
+
+        No legal moves available for player: black!
+
+        """
+        # the moves that led to the above situation, [black, white, ...]
+        black_moves = ['d3', 'f5', 'f4', 'h5',
+                       'g7', 'g8',  'f3', 'c7', 'h6', 'e7']
+        white_moves = ['e3', 'e6', 'g5', 'f6',
+                       'f7', 'd6', 'g6', 'f8', 'h8', 'g4']
+        moves = list(zip(black_moves, white_moves))
+
+        for move in moves:
+            black_move, white_move = move
+            # perform black move
+            print('black: {}'.format(black_move))
+            flips = game.get_valid_flips(
+                black, white, board.parse_index(black_move))
+            board[board.parse_index(black_move)] = int(black)
+            game.flip_tiles(flips, black)
+            # perform white move
+            print('white: {}'.format(white_move))
+            flips = game.get_valid_flips(
+                white, black, board.parse_index(white_move))
+            board[board.parse_index(white_move)] = int(white)
+            game.flip_tiles(flips, white)
+        print(board)
+
+        # now check legal moves for black
+        legal_moves = map(
+            board.parse_numeric_index,
+            game.legal_moves(black, white))
+        print(list(legal_moves))
+        self.assertEqual(
+            sorted(['g4', 'h4', 'h7']), sorted(list(legal_moves)))
+
     def test_nbr_tiles(self):
         board = Board()
         white = Player('white')
