@@ -94,7 +94,7 @@ class Board:
     def parse_numeric_index(self, item):
         """
         Convert numeric index into human-readable alphanumeric form.
-        E.g. parse_numeric_index(0, 0) == '1a'
+        E.g. parse_numeric_index(0, 0) == 'a1'
         """
         x, y = item
         return Board.order[x] + str(y + 1)
@@ -193,9 +193,10 @@ class Game:
         Return a list of all possible legal moves on the board for 'player'.
         """
         legal_moves = list()
-        for x in range(0, 7):
-            for y in range(0, 7):
-                if self.get_valid_flips(player, other_player, (x, y)):
+        for x in range(0, 8):
+            for y in range(0, 8):
+                flips = self.get_valid_flips(player, other_player, (x, y))
+                if flips:
                     legal_moves.append((x, y))
         return legal_moves
 
