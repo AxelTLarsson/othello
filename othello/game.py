@@ -205,12 +205,12 @@ class Game:
 
         return tiles_to_flip if tiles_to_flip else None
 
-    def flip_tiles(self, tiles, player):
+    def flip_tiles(self, tiles):
         """
         Flip all tiles in 'tiles' to the colour of 'player'.
         """
         for tile in tiles:
-            self.board[tile] = int(player)
+            self.board[tile] = int(self.current_player)
 
     def legal_moves(self):
         """
@@ -238,6 +238,10 @@ class Game:
         print('Show this help text by typing "h" or "help".')
         print('Exit the game at any time by typing "q" or "quit".')
 
+    def move(self, place, tiles=None):
+        self.board[place] = int(self.current_player)
+        self.flip_tiles(tiles)
+
     def play(self):
         """
         Start the game, alternating between players' turns.
@@ -261,15 +265,14 @@ class Game:
                     print('No legal moves available for any player!')
                     break
                 else:
-                    print('No legal moves available for player %s!' % player)
+                    print('No legal moves available for player %s!' %
+                          self.current_player)
                     # other player's turn instead
-                    i += 1
-                    player = self.players[i % 2]
-                    other_player = self.players[(i + 1) % 2]
+                    self.swap_players()
 
             # loop until we get some valid input
             while True:
-                position = player.get_move()
+                position = self.current_player.get_move()
 
                 if position.upper() == 'Q' or position.upper() == 'QUIT':
                     return
@@ -280,15 +283,14 @@ class Game:
                 position = self.board.parse_index(position)
                 tiles = self.get_valid_flips(position)
                 if tiles:
-                    self.board[position] = int(player)
-                    self.flip_tiles(tiles, player)
+                    self.move(position, tiles)
                     break
                 else:
                     print('Illegal move!')
                     # we do not update i here, since 'player' is not updated
                     # in this loop anyway
 
-            i += 1
+            self.swap_players()
 
         # game finished
         player_tiles = self.nbr_of_tiles(self.current_player)
