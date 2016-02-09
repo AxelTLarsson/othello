@@ -21,28 +21,23 @@ class GameTest(TestCase):
         players = [Player('black'), Player('white')]
         game = Game(board, players)
 
-        player = game.players[0]
-        other_player = game.players[1]
-
         # illegal moves should return false
-        self.assertIsNone(game.get_valid_flips(player, other_player,
-                                               board.parse_index('3l')))
-        self.assertIsNone(game.get_valid_flips(player, other_player,
-                                               board.parse_index('4d')))
+        self.assertIsNone(game.get_valid_flips(board.parse_index('3l')))
+        self.assertIsNone(game.get_valid_flips(board.parse_index('4d')))
 
         # all possible legal moves for starting black
-        self.assertEqual(game.get_valid_flips(player, other_player,
-                                              board.parse_index('3d')),
-                         [board.parse_index('4d')])
-        self.assertEqual(game.get_valid_flips(player, other_player,
-                                              board.parse_index('4c')),
-                         [board.parse_index('4d')])
-        self.assertEqual(game.get_valid_flips(player, other_player,
-                                              board.parse_index('6e')),
-                         [board.parse_index('5e')])
-        self.assertEqual(game.get_valid_flips(player, other_player,
-                                              board.parse_index('5f')),
-                         [board.parse_index('5e')])
+        self.assertEqual(game.get_valid_flips(
+            board.parse_index('3d')),
+            [board.parse_index('4d')])
+        self.assertEqual(game.get_valid_flips(
+            board.parse_index('4c')),
+            [board.parse_index('4d')])
+        self.assertEqual(game.get_valid_flips(
+            board.parse_index('6e')),
+            [board.parse_index('5e')])
+        self.assertEqual(game.get_valid_flips(
+            board.parse_index('5f')),
+            [board.parse_index('5e')])
 
     def test_legal_moves(self):
         board = Board()
@@ -53,32 +48,35 @@ class GameTest(TestCase):
         # test possible starting moves for black
         legal_moves = map(
             board.parse_numeric_index,
-            game.legal_moves(black, white))
+            game.legal_moves())
         self.assertEqual(['c4', 'd3', 'e6', 'f5'], list(legal_moves))
 
         # if white were to play first
+        game.swap_players()  # white's turn
         legal_moves = map(
             board.parse_numeric_index,
-            game.legal_moves(white, black))
+            game.legal_moves())
         self.assertEqual(
             sorted(['e3', 'f4', 'c5', 'd6']), sorted(list(legal_moves)))
 
         # assume black makes 'd3'
-        flips = game.get_valid_flips(black, white, board.parse_index('d3'))
+        game.swap_players()     # black's turn
+        flips = game.get_valid_flips(board.parse_index('d3'))
         board[board.parse_index('d3')] = int(black)
-        game.flip_tiles(flips, black)
+        game.flip_tiles(flips)
 
         # then check legal moves for white
+        game.swap_players()     # white's turn
         legal_moves = map(
             board.parse_numeric_index,
-            game.legal_moves(white, black))
+            game.legal_moves())
         self.assertEqual(
             sorted(['c3', 'e3', 'c5']), sorted(list(legal_moves)))
 
     def test_legal_moves_thoroughly(self):
         board = Board()
-        white = Player('white')
-        black = Player('black')
+        white = Human('white')
+        black = Human('black')
         game = Game(board, [black, white])
         # a specific instance that casued issues:
         """
@@ -106,7 +104,7 @@ class GameTest(TestCase):
         """
         # the moves that led to the above situation, [black, white, ...]
         black_moves = ['d3', 'f5', 'f4', 'h5',
-                       'g7', 'g8',  'f3', 'c7', 'h6', 'e7']
+                       'g7', 'g8', 'f3', 'c7', 'h6', 'e7']
         white_moves = ['e3', 'e6', 'g5', 'f6',
                        'f7', 'd6', 'g6', 'f8', 'h8', 'g4']
         moves = list(zip(black_moves, white_moves))
@@ -115,23 +113,25 @@ class GameTest(TestCase):
             black_move, white_move = move
 
             # perform black move
-            flips = game.get_valid_flips(
-                black, white, board.parse_index(black_move))
+            flips = game.get_valid_flips(board.parse_index(black_move))
             board[board.parse_index(black_move)] = int(black)
-            game.flip_tiles(flips, black)
+            game.flip_tiles(flips)
 
             # perform white move
-            flips = game.get_valid_flips(
-                white, black, board.parse_index(white_move))
+            game.swap_players()     # white's turn
+
+            flips = game.get_valid_flips(board.parse_index(white_move))
             board[board.parse_index(white_move)] = int(white)
-            game.flip_tiles(flips, white)
+            game.flip_tiles(flips)
+
+            game.swap_players()     # black's turn again
 
         # now check legal moves for black
         legal_moves = map(
             board.parse_numeric_index,
-            game.legal_moves(black, white))
+            game.legal_moves())
         self.assertEqual(
-          sorted(['h3', 'h4', 'h7']), sorted(list(legal_moves)))
+            sorted(['h3', 'h4', 'h7']), sorted(list(legal_moves)))
 
     def test_parsers(self):
         board = Board()
@@ -150,9 +150,9 @@ class GameTest(TestCase):
         self.assertEqual(game.nbr_of_tiles(black), 2)
         self.assertEqual(game.nbr_of_tiles(white), 2)
         # black makes move 'd3'
-        flips = game.get_valid_flips(black, white, board.parse_index('d3'))
+        flips = game.get_valid_flips(board.parse_index('d3'))
         board[board.parse_index('d3')] = int(black)
-        game.flip_tiles(flips, black)
+        game.flip_tiles(flips)
 
         self.assertEqual(game.nbr_of_tiles(white), 1)
         self.assertEqual(game.nbr_of_tiles(black), 4)
