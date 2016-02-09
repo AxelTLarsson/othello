@@ -31,6 +31,24 @@ class Player:
         else:
             raise ValueError
 
+    def get_move(self):
+        # implement in subclasses
+        pass
+
+
+class Human(Player):
+    """
+    This player asks for input from the terminal.
+    """
+
+    def get_move(self):
+        """
+        Ask human for desired move.
+        """
+        prompt = 'Player %s: ' % str(self)
+        position = input(prompt)
+        return position
+
 
 class Board:
     """
@@ -142,10 +160,6 @@ class Game:
         if place is None:
             return None
 
-        current_player = self.current_player
-        other_player = [p for p in self.players if p is not
-                        self.current_player][0]
-
         # check that the tile is not taken
         if self.board[place] != 0:
             return None
@@ -168,7 +182,7 @@ class Game:
 
             # go as far as possible in current direction
             # while tiles are of opposing colour
-            while self.board[x, y] == int(other_player):
+            while self.board[x, y] == int(self.other_player):
                 x += xdir
                 y += ydir
                 if not self.board.on_board((x, y)):
@@ -180,7 +194,7 @@ class Game:
                 continue
 
             # if current stretch is "anchored" by this player's tile, we're ok
-            if self.board[x, y] == int(current_player):
+            if self.board[x, y] == int(self.current_player):
                 # build a list of all the tiles to flip
                 while True:
                     x -= xdir
@@ -255,8 +269,8 @@ class Game:
 
             # loop until we get some valid input
             while True:
-                prompt = 'Player %s: ' % player
-                position = input(prompt)
+                position = player.get_move()
+
                 if position.upper() == 'Q' or position.upper() == 'QUIT':
                     return
                 elif position.upper() == 'H' or position.upper() == 'HELP':
@@ -264,7 +278,6 @@ class Game:
                     continue
 
                 position = self.board.parse_index(position)
-
                 tiles = self.get_valid_flips(position)
                 if tiles:
                     self.board[position] = int(player)
@@ -278,14 +291,16 @@ class Game:
             i += 1
 
         # game finished
-        player_tiles = self.nbr_of_tiles(player)
-        other_tiles = self.nbr_of_tiles(other_player)
+        player_tiles = self.nbr_of_tiles(self.current_player)
+        other_tiles = self.nbr_of_tiles(self.other_player)
         if player_tiles > other_tiles:
             print("Player {} won with {} tiles over player {}'s {} tiles!"
-                  .format(player, player_tiles, other_player, other_tiles))
+                  .format(self.current_player, player_tiles, self.other_player,
+                          other_tiles))
         elif other_tiles > player_tiles:
             print("Player {} won with {} tiles over player {}'s {} tiles!"
-                  .format(other_player, other_tiles, player, player_tiles))
+                  .format(self.other_player, other_tiles, self.current_player,
+                          player_tiles))
         else:
             print("It's a draw!'")
 
@@ -309,7 +324,7 @@ def main():
     args = parser.parse_args()
 
     board = Board()
-    players = [Player('black'), Player('white')]
+    players = [Human('black'), Human('white')]
 
     game = Game(board, players, args.visualise)
     game.play()

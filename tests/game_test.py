@@ -3,7 +3,7 @@ from unittest import TestCase
 from othello.game import *
 
 
-class OthelloTest(TestCase):
+class GameTest(TestCase):
 
     def test_on_board(self):
         board = Board()
