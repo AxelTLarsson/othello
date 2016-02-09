@@ -47,8 +47,11 @@ class AI:
 
     def result(self, state, a):
         self._expanded_states += 1
-        state_copy = deepcopy(state)
-        state_copy.move(a)
+        state_copy = deepcopy(state)  # todo: come up with a better way to copy (or don't copy at all??)
+        state_copy.board = Board()
+        state_copy.board._board = state.board._board.copy()
+        tiles = state_copy.get_valid_flips(a)  # todo: this should not be done here!
+        state_copy.move(a, tiles)
         return state_copy
 
     def utility(self, state):
@@ -130,7 +133,6 @@ if __name__ == '__main__':
     players = [Player('black'), Player('white')]
     game = Game(board, players, visualise=True)
     game.board[3, 2] = int(players[1])
-    print(board)
 
     ai = MiniMaxAI(player=players[0], depth=0)
     print(ai.search(game))

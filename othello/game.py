@@ -136,6 +136,7 @@ class Game:
     """
 
     def __init__(self, board, players, visualise=False):
+        print("In init")
         self.players = players
         self.board = board
         self.visualise = visualise
