@@ -20,7 +20,7 @@ class AI:
     """
     Base class for MiniMax and AlphaBeta AI agents.
     """
-    def __init__(self, player, time_limit, edge_weight=3, corner_weight=10,
+    def __init__(self, player, time_limit=None, edge_weight=3, corner_weight=10,
                  depth=None):
         if depth is None:
             self.depth = np.inf
@@ -47,7 +47,7 @@ class AI:
 
     def result(self, state, a):
         self._expanded_states += 1
-        state_copy = state.copy()
+        state_copy = deepcopy(state)
         state_copy.move(a)
         return state_copy
 
@@ -125,72 +125,12 @@ class AlphaBetaAI(AI):
         return v
 
 
-class TestGame:
-    """
-    A test game mirroring the example in the book to test the AI.
-    """
-    def __init__(self):
-        self.state = 'start'
-
-        self.scores = {
-            'a1': 10, 'a2': 15, 'a3': 4,
-            'b1':  3, 'b2': 12, 'b3': 8,
-            'c1':  2, 'c2':  4, 'c3': 6,
-            'd1': 14, 'd2':  5, 'd3': 2,
-        }
-
-        self.states = OrderedDict([
-            ('a1', OrderedDict([('b1', 'x'), ('b2', 'x'), ('b3', 'x')])),
-            ('a2', OrderedDict([('c1', 'x'), ('c2', 'x'), ('c3', 'x')])),
-            ('a3', OrderedDict([('d1', 'x'), ('d2', 'x'), ('d3', 'x')])),
-        ])
-
-    def move(self, place):
-        assert place in self.states.keys()
-        self.state = place
-        self.states = self.states[place]
-
-    def legal_moves(self):
-        try:
-            return list(self.states.keys())
-        except AttributeError:
-            return None
-
-    def is_terminal(self):
-        return self.states is 'x'
-
-    def copy(self):
-        return deepcopy(self)
-
-    def __mul__(self, other):
-        return self.scores[self.state] * other
-
-    def __rmul__(self, other):
-        return self.scores[self.state] * other
-
-
 if __name__ == '__main__':
+    board = Board()
+    players = [Player('black'), Player('white')]
+    game = Game(board, players, visualise=True)
+    game.board[3, 2] = int(players[1])
+    print(board)
 
-    game = TestGame()
-    print(game.states)
-
-    print("\nMinimax")
-    ai = MiniMaxAI(1, time_limit=10)
-    game = TestGame()
+    ai = MiniMaxAI(player=players[0], depth=0)
     print(ai.search(game))
-    print(ai)
-
-    print("\nAlpha-beta")
-    ai = AlphaBetaAI(1, time_limit=10)
-    game = TestGame()
-    print(ai.search(game))
-    # with the default setup this should have expanded two less nodes
-    # than the standard mini-max search
-    print(ai)
-
-    print("\nDepth limited")
-    ai = MiniMaxAI(1, time_limit=10, depth=0)
-    game = TestGame()
-    print(ai.depth)
-    print(ai.search(game))
-    print(ai)

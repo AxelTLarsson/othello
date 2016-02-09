@@ -121,6 +121,8 @@ class Game:
         self.players = players
         self.board = board
         self.visualise = visualise
+        self.current_player = players[0]
+        self.other_player = players[1]
 
         # set the starting positions of the players
         self.board['4d'] = int(players[1])
@@ -128,13 +130,21 @@ class Game:
         self.board['5d'] = int(players[0])
         self.board['5e'] = int(players[1])
 
-    def get_valid_flips(self, current_player, other_player, place):
+    def swap_players(self):
+        self.other_player, self.current_player = \
+            self.current_player, self.other_player
+
+    def get_valid_flips(self, place):
         """
         For a suggested move, given by 'place', return the tiles to be flipped,
         if any, otherwise return None.
         """
         if place is None:
             return None
+
+        current_player = self.current_player
+        other_player = [p for p in self.players if p is not
+                        self.current_player][0]
 
         # check that the tile is not taken
         if self.board[place] != 0:
@@ -188,14 +198,14 @@ class Game:
         for tile in tiles:
             self.board[tile] = int(player)
 
-    def legal_moves(self, player, other_player):
+    def legal_moves(self):
         """
         Return a list of all possible legal moves on the board for 'player'.
         """
         legal_moves = list()
-        for x in range(0, 8):
-            for y in range(0, 8):
-                flips = self.get_valid_flips(player, other_player, (y, x))
+        for x in range(8):
+            for y in range(8):
+                flips = self.get_valid_flips((y, x))
                 if flips:
                     legal_moves.append((x, y))
         return legal_moves
@@ -229,12 +239,10 @@ class Game:
                 # todo: print output move from AI
                 pass
 
-            player = self.players[i % 2]
-            other_player = self.players[(i + 1) % 2]
-
             # Check that moves are actually available for current player
-            if self.legal_moves(player, other_player) == []:
-                if self.legal_moves(other_player, player) == []:
+            if self.legal_moves() == []:
+                self.swap_players()
+                if self.legal_moves() == []:
                     # Game over
                     print('No legal moves available for any player!')
                     break
@@ -257,7 +265,7 @@ class Game:
 
                 position = self.board.parse_index(position)
 
-                tiles = self.get_valid_flips(player, other_player, position)
+                tiles = self.get_valid_flips(position)
                 if tiles:
                     self.board[position] = int(player)
                     self.flip_tiles(tiles, player)
