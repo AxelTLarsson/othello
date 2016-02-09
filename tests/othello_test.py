@@ -126,17 +126,12 @@ class OthelloTest(TestCase):
             board[board.parse_index(white_move)] = int(white)
             game.flip_tiles(flips, white)
 
-        print(board)
-
         # now check legal moves for black
         legal_moves = map(
             board.parse_numeric_index,
             game.legal_moves(black, white))
-        print('legal moves for black: {}'.format(list(legal_moves)))
-        print(game.get_valid_flips(black, white, board.parse_index('c8')))
-        # todo: legal_moves seem to be completely crazy in this instance
-        # self.assertEqual(
-        #   sorted(['g4', 'h4', 'h7']), sorted(list(legal_moves)))
+        self.assertEqual(
+          sorted(['h3', 'h4', 'h7']), sorted(list(legal_moves)))
 
     def test_parsers(self):
         board = Board()
