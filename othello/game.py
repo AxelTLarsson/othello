@@ -31,6 +31,24 @@ class Player:
         else:
             raise ValueError
 
+    def get_move(self):
+        # implement in subclasses
+        pass
+
+
+class Human(Player):
+    """
+    This player asks for input from the terminal.
+    """
+
+    def get_move(self):
+        """
+        Ask human for desired move.
+        """
+        prompt = 'Player %s: ' % str(self)
+        position = input(prompt)
+        return position
+
 
 class Board:
     """
@@ -247,8 +265,8 @@ class Game:
 
             # loop until we get some valid input
             while True:
-                prompt = 'Player %s: ' % player
-                position = input(prompt)
+                position = player.get_move()
+
                 if position.upper() == 'Q' or position.upper() == 'QUIT':
                     return
                 elif position.upper() == 'H' or position.upper() == 'HELP':
@@ -256,7 +274,6 @@ class Game:
                     continue
 
                 position = self.board.parse_index(position)
-
                 tiles = self.get_valid_flips(player, other_player, position)
                 if tiles:
                     self.board[position] = int(player)
@@ -301,7 +318,7 @@ def main():
     args = parser.parse_args()
 
     board = Board()
-    players = [Player('black'), Player('white')]
+    players = [Human('black'), Human('white')]
 
     game = Game(board, players, args.visualise)
     game.play()
