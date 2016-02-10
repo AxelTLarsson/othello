@@ -136,7 +136,6 @@ class Game:
     """
 
     def __init__(self, board, players, visualise=False):
-        print("In init")
         self.players = players
         self.board = board
         self.visualise = visualise
@@ -206,6 +205,9 @@ class Game:
 
         return tiles_to_flip if tiles_to_flip else None
 
+    def get_tiles_to_flip(self, place):
+        return self.get_valid_flips(place)
+
     def flip_tiles(self, tiles):
         """
         Flip all tiles in 'tiles' to the colour of 'player'.
@@ -220,7 +222,7 @@ class Game:
         legal_moves = list()
         for x in range(8):
             for y in range(8):
-                flips = self.get_valid_flips((y, x))
+                flips = self.get_valid_flips((x, y))
                 if flips:
                     legal_moves.append((x, y))
         return legal_moves
@@ -239,9 +241,11 @@ class Game:
         print('Show this help text by typing "h" or "help".')
         print('Exit the game at any time by typing "q" or "quit".')
 
-    def move(self, place, tiles=None):
+    def move(self, place):
         self.board[place] = int(self.current_player)
-        self.flip_tiles(tiles)
+        print("Game move: %s" % str(place))
+        print("Game flips: %s" % str(self.get_valid_flips(place)))
+        self.flip_tiles(self.get_valid_flips(place))
 
     def play(self):
         """

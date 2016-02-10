@@ -47,11 +47,17 @@ class AI:
 
     def result(self, state, a):
         self._expanded_states += 1
-        state_copy = deepcopy(state)  # todo: come up with a better way to copy (or don't copy at all??)
-        state_copy.board = Board()
-        state_copy.board._board = state.board._board.copy()
-        tiles = state_copy.get_valid_flips(a)  # todo: this should not be done here!
-        state_copy.move(a, tiles)
+
+        state_copy = deepcopy(state)
+
+        if state.__class__.__name__.startswith('Game'):
+            # todo: need a way to copy this properly! (or don't copy at all??)
+            state_copy.board = Board()
+            state_copy.board._board = state.board._board.copy()
+
+        print("Move: %s" % str(a))
+        print("Flips: %s" % str(state_copy.get_tiles_to_flip(a)))
+        state_copy.move(a)
         return state_copy
 
     def utility(self, state):
