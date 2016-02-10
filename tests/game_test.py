@@ -127,6 +127,7 @@ class GameTest(TestCase):
             game.swap_players()     # black's turn again
 
         # now check legal moves for black
+        print(game.board)
         legal_moves = map(
             board.parse_numeric_index,
             game.legal_moves())

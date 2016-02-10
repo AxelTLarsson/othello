@@ -3,6 +3,8 @@ import re
 import argparse
 import os
 
+import sys
+
 
 class Player:
     """
@@ -129,6 +131,12 @@ class Board:
         else:
             self._board[key] = value
 
+    def __mul__(self, other):
+        return self._board * other
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
 
 class Game:
     """
@@ -242,10 +250,15 @@ class Game:
         print('Exit the game at any time by typing "q" or "quit".')
 
     def move(self, place):
-        self.board[place] = int(self.current_player)
-        print("Game move: %s" % str(place))
-        print("Game flips: %s" % str(self.get_valid_flips(place)))
         self.flip_tiles(self.get_valid_flips(place))
+        self.board[place] = int(self.current_player)
+
+    def is_terminal(self):
+        """
+        Just a very basic test at the moment checks if there are any zeros.
+        :return:
+        """
+        return not self.board.any()
 
     def play(self):
         """
@@ -320,6 +333,12 @@ class Game:
             if x == int(player):
                 nbr += 1
         return nbr
+
+    def __mul__(self, other):
+        return self.board * other
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
 
 
 def main():

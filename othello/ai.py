@@ -1,6 +1,8 @@
 from collections import OrderedDict
 
 import numpy as np
+import sys
+
 from othello.game import Board, Player, Game
 from copy import deepcopy
 
@@ -55,8 +57,6 @@ class AI:
             state_copy.board = Board()
             state_copy.board._board = state.board._board.copy()
 
-        print("Move: %s" % str(a))
-        print("Flips: %s" % str(state_copy.get_tiles_to_flip(a)))
         state_copy.move(a)
         return state_copy
 
@@ -81,7 +81,8 @@ class MiniMaxAI(AI):
         moves = state.legal_moves()
         scores = [self.min_value(self.result(state, a), self.depth)
                   for a in moves]
-        print(max(scores))
+        print(scores)
+        # print(max(scores))
         return moves[np.argmax(scores)]
 
     def max_value(self, state, depth):
