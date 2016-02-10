@@ -49,7 +49,7 @@ class GameTest(TestCase):
         legal_moves = map(
             board.parse_numeric_index,
             game.legal_moves())
-        self.assertEqual(['c4', 'd3', 'e6', 'f5'], list(legal_moves))
+        self.assertEqual(['c4', 'd3', 'e6', 'f5'], sorted(list(legal_moves)))
 
         # if white were to play first
         game.swap_players()  # white's turn
@@ -127,7 +127,6 @@ class GameTest(TestCase):
             game.swap_players()     # black's turn again
 
         # now check legal moves for black
-        print(game.board)
         legal_moves = map(
             board.parse_numeric_index,
             game.legal_moves())
@@ -140,8 +139,12 @@ class GameTest(TestCase):
         self.assertEqual(board.parse_index('h8'), (7, 7))
         self.assertEqual(board.parse_numeric_index((1, 1)), 'b2')
         self.assertEqual(board.parse_numeric_index((7, 7)), 'h8')
+        self.assertEqual(board.parse_index('2c'), (1, 2))
+        self.assertEqual(board.parse_numeric_index((1, 2)), 'c2')
         self.assertEqual(board.parse_index('2b'),
                          board.parse_index(board.parse_numeric_index((1, 1))))
+        self.assertEqual(board.parse_index('2c'),
+                         board.parse_index(board.parse_numeric_index((1, 2))))
 
     def test_nbr_tiles(self):
         board = Board()

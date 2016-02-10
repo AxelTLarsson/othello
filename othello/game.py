@@ -95,7 +95,7 @@ class Board:
     def parse_index(self, item):
         """
         Convert alphanumeric index into numeric form.
-        E.g. parse_index('1a') == (0, 0)
+        E.g. parse_index('2c') == parse_index('c2') == (1, 2)
         """
         if re.match(r'\d[a-zA-Z]', item):
             pass  # number first, followed by letter
@@ -114,10 +114,13 @@ class Board:
     def parse_numeric_index(self, item):
         """
         Convert numeric index into human-readable alphanumeric form.
-        E.g. parse_numeric_index((0, 0)) == 'a1'
+        E.g. parse_numeric_index((1, 2)) == 'c2'
         """
+        # IMPORTANT: Board[n1, n2] is interpreted as 'n1 deciding the vertical
+        # position (i.e. [0, 7]), 'n2' the horizontal position (i.e. [a,h])
+        # In the code n1 is referred to as x and n2 as y!
         x, y = item
-        return Board.order[x] + str(y + 1)
+        return Board.order[y] + str(x + 1)
 
     def __getitem__(self, item):
         if isinstance(item, str):

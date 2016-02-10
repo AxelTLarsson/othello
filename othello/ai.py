@@ -22,7 +22,9 @@ class AI:
     """
     Base class for MiniMax and AlphaBeta AI agents.
     """
-    def __init__(self, player, time_limit=None, edge_weight=3, corner_weight=10,
+
+    def __init__(self, player, time_limit=None, edge_weight=3,
+                 corner_weight=10,
                  depth=None):
         if depth is None:
             self.depth = np.inf
@@ -90,7 +92,7 @@ class MiniMaxAI(AI):
             return self.utility(state)
         v = -np.inf
         for a in state.legal_moves():
-            v = max(v, self.min_value(self.result(state, a), depth-1))
+            v = max(v, self.min_value(self.result(state, a), depth - 1))
         return v
 
     def min_value(self, state, depth):
@@ -98,7 +100,7 @@ class MiniMaxAI(AI):
             return self.utility(state)
         v = np.inf
         for a in state.legal_moves():
-            v = min(v, self.max_value(self.result(state, a), depth-1))
+            v = min(v, self.max_value(self.result(state, a), depth - 1))
         return v
 
     def cut_off(self, state, depth):
