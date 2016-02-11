@@ -70,7 +70,7 @@ class AI(Player):
     """
 
     def __init__(self, color, time_limit=None, edge_weight=3,
-                 corner_weight=10, depth=1):
+                 corner_weight=10, depth=10):
         super().__init__(color)
 
         self.depth = depth
