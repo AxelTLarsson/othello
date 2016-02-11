@@ -314,8 +314,12 @@ def main():
         '-v', '--visualise',
         help='visualise game board, default is to output only AI moves',
         action='store_true')
+    parser.add_argument(
+        '-t', '--time',
+        type=int,
+        help='time limit in seconds for each ply, default is 10s',
+        default=10)
     args = parser.parse_args()
-
     board = Board()
     players = [Human('black'), Human('white')]
 
