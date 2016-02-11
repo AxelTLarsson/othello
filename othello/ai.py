@@ -14,9 +14,6 @@ class WeightBoard(Board):
     def __add__(self, other):
         return self._board + other
 
-    def __getattr__(self, *args, **kwargs):
-        return self._board.__getattribute__(*args, **kwargs)
-
 
 class AI:
     """
@@ -70,7 +67,18 @@ class AI:
         :return: float/int, score for the current state given the player set
             at initialization
         """
-        return (self._weight_board * state).sum() * int(self.player)
+        # todo: fix this problem!
+        # print("\n\n")
+        # print(self._weight_board)
+        # print(state.board._board)
+        # print(self._weight_board * state.board._board)
+        # print(self._weight_board * np.arange(64).reshape((8, 8)))
+        # print(state * np.arange(64).reshape((8, 8)))
+
+        # utility = np.sum(np.sum(self._weight_board * state))
+        utility = np.sum(state.board) * int(self.player)
+        print(utility)
+        return utility * int(self.player)
 
     def __str__(self):
         return ("%s for player %s: %s expanded states" %
@@ -142,6 +150,7 @@ if __name__ == '__main__':
     players = [Player('black'), Player('white')]
     game = Game(board, players, visualise=True)
     game.board[3, 2] = int(players[1])
+    game.board[3, 1] = int(players[1])
 
     ai = MiniMaxAI(player=players[0], depth=0)
     print(ai.search(game))

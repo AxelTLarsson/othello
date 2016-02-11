@@ -10,8 +10,8 @@ class Player:
     """
     Represents the players in the game; white and black.
     """
-    white = 1
-    black = 2
+    white = -1
+    black = 1
 
     def __init__(self, color):
         self.color = color
@@ -135,10 +135,10 @@ class Board:
             self._board[key] = value
 
     def __mul__(self, other):
-        return self._board * other
+        return np.multiply(self._board, other)
 
     def __rmul__(self, other):
-        return self.__mul__(other)
+        return np.multiply(other, self._board)
 
 
 class Game:
@@ -341,7 +341,7 @@ class Game:
         return self.board * other
 
     def __rmul__(self, other):
-        return self.__mul__(other)
+        return other * self.board
 
 
 def main():

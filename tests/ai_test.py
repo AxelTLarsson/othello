@@ -25,6 +25,10 @@ class TestGame:
             ('a3', OrderedDict([('d1', 'x'), ('d2', 'x'), ('d3', 'x')])),
         ])
 
+    @property
+    def board(self):
+        return self.scores[self.state]
+
     def move(self, place):
         assert place in self.states.keys()
         self.state = place
