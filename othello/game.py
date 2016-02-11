@@ -239,6 +239,12 @@ class Game:
                     print("Player %s moved on %s" %
                           (str(self.other_player),
                            self.board.parse_numeric_index(position)))
+                    black = self.players[0]
+                    white = self.players[1]
+                    black_tiles = self.nbr_of_tiles(black)
+                    white_tiles = self.nbr_of_tiles(white)
+                    print("Player {} has {} tiles, {} has {} tiles".format(
+                        black, black_tiles, white, white_tiles))
                 print(self.board)
             else:
                 # todo: print output move from AI
