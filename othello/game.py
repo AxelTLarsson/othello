@@ -2,6 +2,12 @@ import numpy as np
 import re
 import argparse
 import os
+
+import sys
+import os.path
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 from othello.players import Human, MiniMaxAI, AlphaBetaAI
 
 
