@@ -1,4 +1,10 @@
 from unittest import TestCase
+import unittest
+
+import sys
+import os.path
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from othello.game import *
 from othello.players import Player
@@ -161,3 +167,6 @@ class GameTest(TestCase):
 
         self.assertEqual(game.nbr_of_tiles(white), 1)
         self.assertEqual(game.nbr_of_tiles(black), 4)
+
+if __name__ == '__main__':
+    unittest.main()
