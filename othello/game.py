@@ -230,11 +230,15 @@ class Game:
         Start the game, alternating between players' turns.
         """
         finished = False
-        i = 0
+        position = None
 
         while not finished:
             if self.visualise:
                 self.clear()
+                if position is not None:
+                    print("Player %s moved on %s" %
+                          (str(self.other_player),
+                           self.board.parse_numeric_index(position)))
                 print(self.board)
             else:
                 # todo: print output move from AI
@@ -249,21 +253,23 @@ class Game:
                     break
                 else:
                     print('No legal moves available for player %s!' %
-                          self.current_player)
-                    # other player's turn instead
-                    self.swap_players()
+                          self.other_player)
+                    # other player's turn instead, we just pass because we've
+                    # already swapped
 
             # loop until we get some valid input
             while True:
-                position = self.current_player.get_move()
+                position = self.current_player.get_move(self)
 
-                if position.upper() == 'Q' or position.upper() == 'QUIT':
-                    return
-                elif position.upper() == 'H' or position.upper() == 'HELP':
-                    self.print_help()
-                    continue
+                if isinstance(self.current_player, Human):
+                    if position.upper() == 'Q' or position.upper() == 'QUIT':
+                        return
+                    elif position.upper() == 'H' or position.upper() == 'HELP':
+                        self.print_help()
+                        continue
 
-                position = self.board.parse_index(position)
+                    position = self.board.parse_index(position)
+
                 tiles = self.get_valid_flips(position)
                 if tiles:
                     self.move(position, tiles)
@@ -315,7 +321,8 @@ def main():
     args = parser.parse_args()
 
     board = Board()
-    players = [Human('black'), Human('white')]
+    # players = [Human('black'), Human('white')]
+    players = [Human('black'), MiniMaxAI('white')]
 
     game = Game(board, players, args.visualise)
     game.play()
