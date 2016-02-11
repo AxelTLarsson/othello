@@ -252,8 +252,11 @@ class Game:
         print('Show this help text by typing "h" or "help".')
         print('Exit the game at any time by typing "q" or "quit".')
 
-    def move(self, place):
-        self.flip_tiles(self.get_valid_flips(place))
+    def move(self, place, flips=None):
+        if not flips:
+            self.flip_tiles(self.get_valid_flips(place))
+        else:
+            self.flip_tiles(flips)
         self.board[place] = int(self.current_player)
 
     def is_terminal(self):
