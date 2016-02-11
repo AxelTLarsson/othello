@@ -1,5 +1,4 @@
 import numpy as np
-# from othello.game import Board, Game
 from copy import deepcopy
 
 
@@ -32,7 +31,7 @@ class Player:
 
     def get_move(self):
         # implement in subclasses
-        pass
+        raise NotImplementedError
 
 
 class Human(Player):
@@ -97,6 +96,12 @@ class AI(Player):
         # self._weight_board[-1, -1] = corner_weight
 
         self._expanded_states = 0
+
+    def search(self, state):
+        raise NotImplementedError
+
+    def get_move(self, state):
+        return self.search(state)
 
     def result(self, state, a):
         self._expanded_states += 1

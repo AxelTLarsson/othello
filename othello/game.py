@@ -1,10 +1,8 @@
-import copy
-
 import numpy as np
 import re
 import argparse
 import os
-from othello.players import Human, Player, MiniMaxAI, AlphaBetaAI
+from othello.players import Human, MiniMaxAI, AlphaBetaAI
 
 
 class Board:
