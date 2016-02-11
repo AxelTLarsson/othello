@@ -1,10 +1,52 @@
-from collections import OrderedDict
-
 import numpy as np
-import sys
-
-from othello.game import Board, Player, Game
+from othello.game import *
 from copy import deepcopy
+
+
+class Player:
+    """
+    Represents the players in the game; white and black.
+    """
+    white = 1
+    black = -1
+
+    def __init__(self, color):
+        self.color = color
+
+    def __str__(self):
+        """
+        Pretty print the player names, e.g. 'white' or 'black'.
+        """
+        return self.color
+
+    def __int__(self):
+        """
+        Get the numeric representation of the player, as used on the board.
+        """
+        if self.color == 'white':
+            return Player.white
+        elif self.color == 'black':
+            return Player.black
+        else:
+            raise ValueError
+
+    def get_move(self):
+        # implement in subclasses
+        pass
+
+
+class Human(Player):
+    """
+    This player asks for input from the terminal.
+    """
+
+    def get_move(self):
+        """
+        Ask human for desired move.
+        """
+        prompt = 'Player %s: ' % str(self)
+        position = input(prompt)
+        return position
 
 
 class WeightBoard(Board):
@@ -15,20 +57,22 @@ class WeightBoard(Board):
         return self._board + other
 
 
-class AI:
+class AI(Player):
     """
     Base class for MiniMax and AlphaBeta AI agents.
     """
 
-    def __init__(self, player, time_limit=None, edge_weight=3,
+    def __init__(self, color, time_limit=None, edge_weight=3,
                  corner_weight=10,
                  depth=None):
+        super().__init__(color)
+
         if depth is None:
             self.depth = np.inf
         else:
             self.depth = depth
 
-        self.player = player
+        self.player = int(self)
         self._time_limit = time_limit
         self._weight_board = WeightBoard() + 1
 
@@ -78,7 +122,7 @@ class AI:
         # utility = np.sum(np.sum(self._weight_board * state))
         utility = np.sum(state.board) * int(self.player)
         print(utility)
-        return utility * int(self.player)
+        return utility  # * int(self.player)
 
     def __str__(self):
         return ("%s for player %s: %s expanded states" %
@@ -91,8 +135,6 @@ class MiniMaxAI(AI):
         moves = state.legal_moves()
         scores = [self.min_value(self.result(state, a), self.depth)
                   for a in moves]
-        print(scores)
-        # print(max(scores))
         return moves[np.argmax(scores)]
 
     def max_value(self, state, depth):
@@ -152,5 +194,6 @@ if __name__ == '__main__':
     game.board[3, 2] = int(players[1])
     game.board[3, 1] = int(players[1])
 
-    ai = MiniMaxAI(player=players[0], depth=0)
+    print(game.board)
+    ai = MiniMaxAI(color='black', depth=0)
     print(ai.search(game))

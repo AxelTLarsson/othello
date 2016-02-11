@@ -2,7 +2,7 @@ from collections import OrderedDict
 from copy import deepcopy
 from unittest import TestCase
 
-from othello.ai import MiniMaxAI, AlphaBetaAI
+from othello.players import MiniMaxAI, AlphaBetaAI
 
 
 class TestGame:

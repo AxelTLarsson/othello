@@ -2,54 +2,7 @@ import numpy as np
 import re
 import argparse
 import os
-
-import sys
-
-
-class Player:
-    """
-    Represents the players in the game; white and black.
-    """
-    white = -1
-    black = 1
-
-    def __init__(self, color):
-        self.color = color
-
-    def __str__(self):
-        """
-        Pretty print the player names, e.g. 'white' or 'black'.
-        """
-        return self.color
-
-    def __int__(self):
-        """
-        Get the numeric representation of the player, as used on the board.
-        """
-        if self.color == 'white':
-            return Player.white
-        elif self.color == 'black':
-            return Player.black
-        else:
-            raise ValueError
-
-    def get_move(self):
-        # implement in subclasses
-        pass
-
-
-class Human(Player):
-    """
-    This player asks for input from the terminal.
-    """
-
-    def get_move(self):
-        """
-        Ask human for desired move.
-        """
-        prompt = 'Player %s: ' % str(self)
-        position = input(prompt)
-        return position
+from othello.players import Human, MiniMaxAI, AlphaBetaAI
 
 
 class Board:

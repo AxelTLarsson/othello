@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 from othello.game import *
+from othello.players import Player
 
 
 class GameTest(TestCase):
