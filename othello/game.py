@@ -2,7 +2,7 @@ import numpy as np
 import re
 import argparse
 import os
-from othello.players import Human, MiniMaxAI, AlphaBetaAI
+from othello.players import Human, MiniMaxAI, AI
 
 
 class Board:
@@ -247,8 +247,11 @@ class Game:
                         black, black_tiles, white, white_tiles))
                 print(self.board)
             else:
-                # todo: print output move from AI
-                pass
+                if position is not None and isinstance(self.other_player,
+                                                       AI):
+                    print("Player {} moved on {}".format(
+                        self.other_player,
+                        self.board.parse_numeric_index(position)))
 
             # Check that moves are actually available for current player
             if self.legal_moves() == []:
