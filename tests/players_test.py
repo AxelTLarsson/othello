@@ -56,18 +56,24 @@ class TestGame:
 class MiniMaxAITest(TestCase):
 
     def test_basic_minimax(self):
-        ai = MiniMaxAI(1, time_limit=10)
+        # int of white player is 1
+        ai = MiniMaxAI('white', time_limit=10)
         game = TestGame()
         self.assertEqual('a1', ai.search(game))
 
     def test_depth_limited_search(self):
-        ai = MiniMaxAI(1, time_limit=10, depth=0)
+        # int of white player is 1
+        ai = MiniMaxAI('white', time_limit=10, depth=0)
         game = TestGame()
         self.assertEqual('a2', ai.search(game))
 
+    def test_minimax_on_othello(self):
+        pass
 
-class AlphaBetaAITest(TestCase):
-    def test_basic_alpha_beta(self):
-        ai = AlphaBetaAI(1, time_limit=10)
-        game = TestGame()
-        self.assertEqual('a1', ai.search(game))
+
+
+# class AlphaBetaAITest(TestCase):
+#     def test_basic_alpha_beta(self):
+#         ai = AlphaBetaAI(1, time_limit=10)
+#         game = TestGame()
+#         self.assertEqual('a1', ai.search(game))

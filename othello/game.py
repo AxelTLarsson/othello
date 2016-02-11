@@ -1,8 +1,10 @@
+import copy
+
 import numpy as np
 import re
 import argparse
 import os
-from othello.players import Human, MiniMaxAI, AlphaBetaAI
+from othello.players import Human, Player, MiniMaxAI, AlphaBetaAI
 
 
 class Board:
@@ -42,8 +44,8 @@ class Board:
         else:
             return True
 
-    def __getattr__(self, *args, **kwargs):
-        return self._board.__getattribute__(*args, **kwargs)
+    # def __getattr__(self, *args, **kwargs):
+    #     return self._board.__getattribute__(*args, **kwargs)
 
     def parse_index(self, item):
         """
@@ -74,6 +76,12 @@ class Board:
         # In the code n1 is referred to as x and n2 as y!
         x, y = item
         return Board.order[y] + str(x + 1)
+
+    def any(self, *args, **kwargs):
+        return self._board.any(*args, **kwargs)
+
+    def sum(self, *args, **kwargs):
+        return self._board.sum(*args, **kwargs)
 
     def __getitem__(self, item):
         if isinstance(item, str):
@@ -288,7 +296,7 @@ class Game:
         Get the number of tiles on the board belonging to 'player'.
         """
         nbr = 0
-        for x in np.nditer(self.board):
+        for x in np.nditer(self.board._board):
             if x == int(player):
                 nbr += 1
         return nbr
@@ -314,5 +322,21 @@ def main():
     game = Game(board, players, args.visualise)
     game.play()
 
+
 if __name__ == '__main__':
-    main()
+    # main()
+    board = Board()
+    players = [Player('black'), Player('white')]
+    game = Game(board, players, visualise=True)
+    game.board[3, 2] = int(players[1])
+    game.board[3, 1] = int(players[1])
+
+    game2 = copy.deepcopy(game)
+    print(type(game.board))
+    print(game.board.on_board((5, 5)))
+    print(type(game2.board))
+    print(game2.board.on_board((5, 5)))
+
+    print(game.board)
+    ai = MiniMaxAI(color='black', depth=0)
+    print(ai.search(game))

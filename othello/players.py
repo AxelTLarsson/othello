@@ -1,5 +1,5 @@
 import numpy as np
-from othello.game import *
+# from othello.game import Board, Game
 from copy import deepcopy
 
 
@@ -49,7 +49,13 @@ class Human(Player):
         return position
 
 
-class WeightBoard(Board):
+class WeightBoard:
+    def __init__(self):
+        self._board = np.ones((8, 8))
+
+    def __getattr__(self, *args, **kwargs):
+        return self._board.__getattribute__(*args, **kwargs)
+
     def __str__(self):
         return str(self._board)
 
@@ -74,19 +80,21 @@ class AI(Player):
 
         self.player = int(self)
         self._time_limit = time_limit
-        self._weight_board = WeightBoard() + 1
 
-        # set the edges on the weight board
-        self._weight_board[:, 0] = edge_weight
-        self._weight_board[0, :] = edge_weight
-        self._weight_board[:, -1] = edge_weight
-        self._weight_board[-1, :] = edge_weight
-
-        # set the corners to the corner weights
-        self._weight_board[0, 0] = corner_weight
-        self._weight_board[-1, 0] = corner_weight
-        self._weight_board[0, -1] = corner_weight
-        self._weight_board[-1, -1] = corner_weight
+        # weight board
+        # self._weight_board = WeightBoard() + 1
+        #
+        # # set the edges on the weight board
+        # self._weight_board[:, 0] = edge_weight
+        # self._weight_board[0, :] = edge_weight
+        # self._weight_board[:, -1] = edge_weight
+        # self._weight_board[-1, :] = edge_weight
+        #
+        # # set the corners to the corner weights
+        # self._weight_board[0, 0] = corner_weight
+        # self._weight_board[-1, 0] = corner_weight
+        # self._weight_board[0, -1] = corner_weight
+        # self._weight_board[-1, -1] = corner_weight
 
         self._expanded_states = 0
 
@@ -94,12 +102,6 @@ class AI(Player):
         self._expanded_states += 1
 
         state_copy = deepcopy(state)
-
-        if state.__class__.__name__.startswith('Game'):
-            # todo: need a way to copy this properly! (or don't copy at all??)
-            state_copy.board = Board()
-            state_copy.board._board = state.board._board.copy()
-
         state_copy.move(a)
         return state_copy
 
@@ -111,18 +113,9 @@ class AI(Player):
         :return: float/int, score for the current state given the player set
             at initialization
         """
-        # todo: fix this problem!
-        # print("\n\n")
-        # print(self._weight_board)
-        # print(state.board._board)
-        # print(self._weight_board * state.board._board)
-        # print(self._weight_board * np.arange(64).reshape((8, 8)))
-        # print(state * np.arange(64).reshape((8, 8)))
-
         # utility = np.sum(np.sum(self._weight_board * state))
         utility = np.sum(state.board) * int(self.player)
-        print(utility)
-        return utility  # * int(self.player)
+        return utility
 
     def __str__(self):
         return ("%s for player %s: %s expanded states" %
@@ -188,12 +181,4 @@ class AlphaBetaAI(AI):
 
 
 if __name__ == '__main__':
-    board = Board()
-    players = [Player('black'), Player('white')]
-    game = Game(board, players, visualise=True)
-    game.board[3, 2] = int(players[1])
-    game.board[3, 1] = int(players[1])
-
-    print(game.board)
-    ai = MiniMaxAI(color='black', depth=0)
-    print(ai.search(game))
+    pass
