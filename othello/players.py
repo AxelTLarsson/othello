@@ -1,6 +1,8 @@
 import numpy as np
 from copy import deepcopy
 
+import time
+
 
 class Player:
     """
@@ -68,12 +70,15 @@ class AI(Player):
     """
 
     def __init__(self, color, time_limit=None, edge_weight=3,
-                 corner_weight=10, depth=1):
+                 corner_weight=10, depth=10):
         super().__init__(color)
 
         self.depth = depth
         self.player = int(self)
-        self._time_limit = time_limit
+        self.time_limit = time_limit
+        self.search_start_time = None
+        self._expanded_states = 0
+
 
         # weight board
         # self._weight_board = WeightBoard() + 1
@@ -89,8 +94,6 @@ class AI(Player):
         # self._weight_board[-1, 0] = corner_weight
         # self._weight_board[0, -1] = corner_weight
         # self._weight_board[-1, -1] = corner_weight
-
-        self._expanded_states = 0
 
     def search(self, state):
         raise NotImplementedError
@@ -126,6 +129,7 @@ class AI(Player):
 class MiniMaxAI(AI):
 
     def search(self, state):
+        self.search_start_time = time.clock()
         moves = state.legal_moves()
         scores = [self.min_value(self.result(state, a), self.depth)
                   for a in moves]
@@ -148,7 +152,8 @@ class MiniMaxAI(AI):
         return v
 
     def cut_off(self, state, depth):
-        return state.is_terminal() or depth <= 0
+        return (state.is_terminal() or depth <= 0 or
+                time.clock() - self.search_start_time >= self.time_limit)
 
 
 class AlphaBetaAI(AI):

@@ -1,3 +1,9 @@
+import unittest
+import sys
+import os.path
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 from collections import OrderedDict
 from copy import deepcopy
 from unittest import TestCase
@@ -92,3 +98,7 @@ class MiniMaxAITest(TestCase):
 #         ai = AlphaBetaAI(1, time_limit=10)
 #         game = TestGame()
 #         self.assertEqual('a1', ai.search(game))
+
+if __name__ == '__main__':
+    unittest.main()
+
