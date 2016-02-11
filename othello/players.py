@@ -29,7 +29,7 @@ class Player:
         else:
             raise ValueError
 
-    def get_move(self):
+    def get_move(self, state):
         # implement in subclasses
         raise NotImplementedError
 
@@ -39,7 +39,7 @@ class Human(Player):
     This player asks for input from the terminal.
     """
 
-    def get_move(self):
+    def get_move(self, state):
         """
         Ask human for desired move.
         """
@@ -68,15 +68,10 @@ class AI(Player):
     """
 
     def __init__(self, color, time_limit=None, edge_weight=3,
-                 corner_weight=10,
-                 depth=None):
+                 corner_weight=10, depth=1):
         super().__init__(color)
 
-        if depth is None:
-            self.depth = np.inf
-        else:
-            self.depth = depth
-
+        self.depth = depth
         self.player = int(self)
         self._time_limit = time_limit
 
@@ -101,7 +96,8 @@ class AI(Player):
         raise NotImplementedError
 
     def get_move(self, state):
-        return self.search(state)
+        move = self.search(state)
+        return move
 
     def result(self, state, a):
         self._expanded_states += 1
@@ -122,9 +118,9 @@ class AI(Player):
         utility = np.sum(state.board) * int(self.player)
         return utility
 
-    def __str__(self):
-        return ("%s for player %s: %s expanded states" %
-                (self.__class__.__name__, self.player, self._expanded_states))
+    # def __str__(self):
+    #     return ("%s for player %s: %s expanded states" %
+    #             (self.__class__.__name__, self.player, self._expanded_states))
 
 
 class MiniMaxAI(AI):
