@@ -2,7 +2,7 @@
 An AI playing the game of Reversi with Othello rules
 
 [The assignment](http://cs.lth.se/eda132-applied-artificial-intelligence/programming-assignments/search/)
-
+```
     a   b   c   d   e   f   g   h
   +---+---+---+---+---+---+---+---+
 1 |   |   |   |   |   |   |   |   |
@@ -21,6 +21,7 @@ An AI playing the game of Reversi with Othello rules
   +---+---+---+---+---+---+---+---+
 8 |   |   |   |   |   |   |   |   |
   +---+---+---+---+---+---+---+---+
+```
 
 ## Installation
 0. Clone the repository.
