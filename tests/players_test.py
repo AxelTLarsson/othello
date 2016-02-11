@@ -1,8 +1,8 @@
 from collections import OrderedDict
 from copy import deepcopy
 from unittest import TestCase
-
-from othello.players import MiniMaxAI, AlphaBetaAI
+from othello.players import MiniMaxAI, AlphaBetaAI, Player
+from othello.game import Board, Game
 
 
 class TestGame:
@@ -67,9 +67,24 @@ class MiniMaxAITest(TestCase):
         game = TestGame()
         self.assertEqual('a2', ai.search(game))
 
-    def test_minimax_on_othello(self):
-        pass
+    def test_minimax_on_othello_3_0_optimum(self):
+        board = Board()
+        players = [Player('black'), Player('white')]
+        game = Game(board, players, visualise=True)
+        game.board[3, 2] = int(players[1])
+        game.board[3, 1] = int(players[1])
+        ai = MiniMaxAI(color='black', depth=0)
+        self.assertEqual(ai.search(game), (3, 0))
 
+    def test_minimax_on_othello_3_7_optimum(self):
+        board = Board()
+        players = [Player('black'), Player('white')]
+        game = Game(board, players, visualise=True)
+        game.board[3, 5] = int(players[0])
+        game.board[3, 6] = int(players[0])
+        game.swap_players()
+        ai = MiniMaxAI(color='white', depth=0)
+        self.assertEqual(ai.search(game), (3, 7))
 
 
 # class AlphaBetaAITest(TestCase):

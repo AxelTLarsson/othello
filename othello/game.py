@@ -324,19 +324,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    board = Board()
-    players = [Player('black'), Player('white')]
-    game = Game(board, players, visualise=True)
-    game.board[3, 2] = int(players[1])
-    game.board[3, 1] = int(players[1])
-
-    game2 = copy.deepcopy(game)
-    print(type(game.board))
-    print(game.board.on_board((5, 5)))
-    print(type(game2.board))
-    print(game2.board.on_board((5, 5)))
-
-    print(game.board)
-    ai = MiniMaxAI(color='black', depth=0)
-    print(ai.search(game))
+    main()
